@@ -34,6 +34,8 @@ const clearSearchBtn = document.getElementById('clear-search-btn');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortSelect = document.getElementById('sort-select');
 const exportCsvBtn = document.getElementById('export-csv-btn');
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeIcon = document.getElementById('theme-icon');
 
 // Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -51,6 +53,7 @@ const postTweetBtn = document.getElementById('post-tweet-btn');
 // --- Initialization & API Calls ---
 
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     fetchNotes();
     setupEventListeners();
 });
@@ -148,6 +151,11 @@ function setupEventListeners() {
     // Export CSV button
     if (exportCsvBtn) {
         exportCsvBtn.addEventListener('click', exportToCSV);
+    }
+
+    // Theme toggle button
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
     }
 }
 
@@ -577,5 +585,38 @@ function exportToCSV() {
     } catch (err) {
         console.error('Failed to export CSV: ', err);
         alert('Could not generate CSV export. Please try again.');
+    }
+}
+
+// Initialize theme from localStorage preference
+function initTheme() {
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-sun';
+        }
+    } else {
+        document.body.classList.remove('light-theme');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-moon';
+        }
+    }
+}
+
+// Toggle between light and dark theme
+function toggleTheme() {
+    if (document.body.classList.contains('light-theme')) {
+        document.body.classList.remove('light-theme');
+        localStorage.setItem('theme', 'dark');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-moon';
+        }
+    } else {
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-sun';
+        }
     }
 }

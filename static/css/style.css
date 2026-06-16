@@ -10,6 +10,7 @@
     --text-primary: #f9fafb;
     --text-secondary: #9ca3af;
     --text-muted: #6b7280;
+    --text-strong: #ffffff;
     
     --border-color: #374151;
     --border-focus: #3b82f6;
@@ -34,6 +35,40 @@
     
     --transition-fast: 0.15s ease;
     --transition-normal: 0.25s ease;
+
+    /* Semantic helpers */
+    --bg-card-footer: rgba(0, 0, 0, 0.15);
+    --bg-stat: rgba(255, 255, 255, 0.02);
+    --border-stat: rgba(255, 255, 255, 0.04);
+    --bg-code: rgba(255, 255, 255, 0.08);
+    --bg-radial-1: rgba(59, 130, 246, 0.08);
+    --bg-radial-2: rgba(16, 185, 129, 0.05);
+}
+
+body.light-theme {
+    --bg-base: #f1f5f9;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8fafc;
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-strong: #0f172a;
+    
+    --border-color: #cbd5e1;
+    --border-focus: #3b82f6;
+    
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.08);
+
+    --bg-card-footer: rgba(0, 0, 0, 0.02);
+    --bg-stat: rgba(0, 0, 0, 0.02);
+    --border-stat: rgba(0, 0, 0, 0.05);
+    --bg-code: rgba(0, 0, 0, 0.05);
+    --bg-radial-1: rgba(59, 130, 246, 0.03);
+    --bg-radial-2: rgba(16, 185, 129, 0.02);
 }
 
 /* Global Reset */
@@ -46,8 +81,8 @@
 body {
     background-color: var(--bg-base);
     background-image: 
-        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0, transparent 50%);
+        radial-gradient(at 0% 0%, var(--bg-radial-1), transparent 50%),
+        radial-gradient(at 100% 100%, var(--bg-radial-2), transparent 50%);
     background-attachment: fixed;
     color: var(--text-primary);
     font-family: var(--font-sans);
@@ -227,8 +262,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .stat-card {
-    background-color: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background-color: var(--bg-stat);
+    border: 1px solid var(--border-stat);
     border-radius: 0.75rem;
     padding: 1rem;
     text-align: center;
@@ -523,7 +558,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .note-card-body code {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: var(--bg-code);
     font-family: var(--font-mono);
     font-size: 0.85rem;
     padding: 0.125rem 0.25rem;
@@ -533,13 +568,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .note-card-body strong {
     font-weight: 600;
-    color: white;
+    color: var(--text-strong);
 }
 
 .note-card-footer {
     padding: 1rem 1.25rem;
     border-top: 1px solid rgba(255, 255, 255, 0.03);
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-card-footer);
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
@@ -874,3 +909,30 @@ h1, h2, h3, h4, h5, h6 {
         grid-template-columns: 1fr;
     }
 }
+
+/* Theme Toggle Button Specifics */
+.theme-toggle-btn {
+    padding: 0.625rem !important;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50% !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+    transform: rotate(15deg) scale(1.05);
+}
+
+body.light-theme .theme-toggle-btn i {
+    color: var(--accent-amber);
+}
+
+/* Light Theme Modal Overlay adjustment */
+body.light-theme .modal-overlay {
+    background-color: rgba(241, 245, 249, 0.8);
+}
+
