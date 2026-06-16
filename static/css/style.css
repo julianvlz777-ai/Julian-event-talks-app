@@ -542,9 +542,10 @@ h1, h2, h3, h4, h5, h6 {
     background-color: rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: flex-end;
+    gap: 0.5rem;
 }
 
-.tweet-card-btn {
+.tweet-card-btn, .copy-card-btn {
     background: none;
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
@@ -563,6 +564,16 @@ h1, h2, h3, h4, h5, h6 {
     background-color: rgba(29, 155, 240, 0.1);
     color: var(--twitter-blue);
     border-color: rgba(29, 155, 240, 0.3);
+}
+.copy-card-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+.copy-card-btn.copied {
+    background-color: var(--accent-emerald);
+    color: white;
+    border-color: var(--accent-emerald);
 }
 
 /* --- Loader, Error, Empty States --- */

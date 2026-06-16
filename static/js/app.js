@@ -33,6 +33,7 @@ const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search-btn');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortSelect = document.getElementById('sort-select');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 
 // Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -143,6 +144,11 @@ function setupEventListeners() {
 
     // Post Tweet button
     postTweetBtn.addEventListener('click', postTweetToTwitter);
+
+    // Export CSV button
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', exportToCSV);
+    }
 }
 
 // --- UI State Management ---
@@ -235,7 +241,7 @@ function updateStats() {
 
 // --- Feed Rendering & Logic ---
 
-function renderNotes() {
+function getFilteredNotes() {
     // Filter
     let filteredNotes = appState.notes.filter(note => {
         // 1. Search Query filter
@@ -265,7 +271,11 @@ function renderNotes() {
         }
     });
     
-    // Render
+    return filteredNotes;
+}
+
+function renderNotes() {
+    const filteredNotes = getFilteredNotes();
     notesGrid.innerHTML = '';
     
     if (filteredNotes.length === 0) {
@@ -315,6 +325,10 @@ function createNoteCard(note) {
             ${note.content_html}
         </div>
         <div class="note-card-footer">
+            <button class="copy-card-btn" title="Copy update text to clipboard">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copy</span>
+            </button>
             <button class="tweet-card-btn" data-id="${note.id}">
                 <i class="fa-brands fa-x-twitter"></i>
                 <span>Tweet Update</span>
@@ -322,6 +336,39 @@ function createNoteCard(note) {
         </div>
     `;
     
+    // Bind click to Copy button
+    const copyBtn = card.querySelector('.copy-card-btn');
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(note.content_text).then(() => {
+            copyBtn.classList.add('copied');
+            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Copied!</span>';
+            
+            setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> <span>Copy</span>';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy card text: ', err);
+            // Fallback for older environments
+            try {
+                const el = document.createElement('textarea');
+                el.value = note.content_text;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Copied!</span>';
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> <span>Copy</span>';
+                }, 2000);
+            } catch (e) {
+                alert('Copy failed. Please manually select the text.');
+            }
+        });
+    });
+
     // Bind click to Tweet button
     card.querySelector('.tweet-card-btn').addEventListener('click', () => {
         openTweetModal(note);
@@ -483,4 +530,52 @@ function postTweetToTwitter() {
     window.open(tweetUrl, '_blank', 'width=550,height=420,referrerpolicy=no-referrer');
     
     closeTweetModal();
+}
+
+// Export the currently filtered notes list as a downloadable CSV file
+function exportToCSV() {
+    const filteredNotes = getFilteredNotes();
+    if (filteredNotes.length === 0) {
+        alert('No notes to export.');
+        return;
+    }
+    
+    // CSV headers
+    const headers = ["Date", "Type", "Content Text", "Link"];
+    const rows = [headers];
+    
+    // Add data rows
+    filteredNotes.forEach(note => {
+        rows.push([
+            note.date,
+            note.type,
+            note.content_text,
+            note.link
+        ]);
+    });
+    
+    // Convert array to CSV format with escaping
+    const csvContent = rows.map(e => e.map(val => {
+        const cleaned = (val || "").toString().replace(/"/g, '""');
+        return `"${cleaned}"`;
+    }).join(",")).join("\n");
+    
+    try {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        
+        // Dynamic file naming: bigquery_release_notes_YYYY-MM-DD.csv
+        const dateStr = new Date().toISOString().slice(0, 10);
+        link.setAttribute("download", `bigquery_release_notes_${dateStr}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (err) {
+        console.error('Failed to export CSV: ', err);
+        alert('Could not generate CSV export. Please try again.');
+    }
 }
