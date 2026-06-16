@@ -267,11 +267,14 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 0.75rem;
     padding: 1rem;
     text-align: center;
-    transition: all var(--transition-fast);
+    cursor: pointer;
+    transition: transform var(--transition-normal), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-normal);
 }
 .stat-card:hover {
-    background-color: rgba(255, 255, 255, 0.04);
-    border-color: var(--border-color);
+    transform: translateY(-2px);
+    background-color: var(--bg-card-hover);
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-glow);
 }
 
 .stat-value {

@@ -118,12 +118,20 @@ function setupEventListeners() {
     // Category filters
     filterButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            appState.selectedCategory = e.target.dataset.category;
-            renderNotes();
+            triggerCategoryFilter(e.target.dataset.category);
         });
     });
+
+    // Stats cards click handlers
+    const totalStatCard = document.querySelector('.total-stat');
+    const featureStatCard = document.querySelector('.feature-stat');
+    const issueStatCard = document.querySelector('.issue-stat');
+    const otherStatCard = document.querySelector('.other-stat');
+
+    if (totalStatCard) totalStatCard.addEventListener('click', () => triggerCategoryFilter('all'));
+    if (featureStatCard) featureStatCard.addEventListener('click', () => triggerCategoryFilter('Feature'));
+    if (issueStatCard) issueStatCard.addEventListener('click', () => triggerCategoryFilter('Issue'));
+    if (otherStatCard) otherStatCard.addEventListener('click', () => triggerCategoryFilter('other'));
 
     // Sorting dropdown
     sortSelect.addEventListener('change', (e) => {
@@ -260,7 +268,9 @@ function getFilteredNotes() {
             
         // 2. Category filter
         const matchesCategory = appState.selectedCategory === 'all' || 
-            note.type.toLowerCase() === appState.selectedCategory.toLowerCase();
+            (appState.selectedCategory === 'other' ? 
+                (note.type.toLowerCase() !== 'feature' && note.type.toLowerCase() !== 'issue') :
+                note.type.toLowerCase() === appState.selectedCategory.toLowerCase());
             
         return matchesSearch && matchesCategory;
     });
@@ -619,4 +629,18 @@ function toggleTheme() {
             themeIcon.className = 'fa-solid fa-sun';
         }
     }
+}
+
+// Trigger a category filter and sync active button state
+function triggerCategoryFilter(category) {
+    filterButtons.forEach(btn => {
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    appState.selectedCategory = category;
+    renderNotes();
 }
